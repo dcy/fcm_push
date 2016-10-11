@@ -1,0 +1,19 @@
+{application, fcm_push,
+ [{description, "An OTP application"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, { fcm_push_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    lager,
+    jiffy,
+    hackney
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {maintainers, []},
+  {licenses, []},
+  {links, []}
+ ]}.
