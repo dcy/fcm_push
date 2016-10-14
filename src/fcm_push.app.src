@@ -8,7 +8,8 @@
     stdlib,
     lager,
     jiffy,
-    hackney
+    hackney,
+    eutil
    ]},
   {env,[]},
   {modules, []},

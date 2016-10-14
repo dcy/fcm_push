@@ -1,19 +1,40 @@
 -module(fcm_push).
 
 %%API
--export([notification/4, notification/5,
-         unvarnished/3, unvarnished/4,
+-export([push/1, push/2, push/3,
+         notification/3, notification/4, notification/5,
+         data/2, data/3, data/4,
          topics/3, topics/4
         ]).
 
 -export([gen_headers/1,
+         gen_authorization/1,
          send/2, send/3
         ]).
 
+-include_lib("eutil/include/eutil.hrl").
 
 -define(URL, <<"https://fcm.googleapis.com/fcm/send">>).
 
+%% 通用API
+push(Maps) ->
+    AppSecret = get_conf_app_secret(),
+    Proxy = get_conf_proxy(),
+    push(AppSecret, Proxy, Maps).
+
+push(AppSecret, Maps) ->
+    push(AppSecret, undefined, Maps).
+
+push(AppSecret, Proxy, Maps) ->
+    Headers = gen_headers(AppSecret),
+    send(Maps, Headers, Proxy).
+
 %% 通知栏
+notification(To, Title, Content) ->
+    AppSecret = get_conf_app_secret(),
+    Proxy = get_conf_proxy(),
+    notification(AppSecret, Proxy, To, Title, Content).
+
 notification(AppSecret, To, Title, Content) ->
     notification(AppSecret, undefined, To, Title, Content).
 
@@ -25,10 +46,16 @@ notification(AppSecret, Proxy, To, Title, Content) ->
     send(Msg, Headers, Proxy).
 
 %% 透传
-unvarnished(AppSecret, To, Data) ->
-    unvarnished(AppSecret, undefined, To, Data).
 
-unvarnished(AppSecret, Proxy, To, Data) ->
+data(To, Data) ->
+    AppSecret = get_conf_app_secret(),
+    Proxy = get_conf_proxy(),
+    data(AppSecret, Proxy, To, Data).
+
+data(AppSecret, To, Data) ->
+    data(AppSecret, undefined, To, Data).
+
+data(AppSecret, Proxy, To, Data) ->
     Msg = #{<<"to">> => list_to_binary(To), <<"data">> => Data},
     Headers = gen_headers(AppSecret),
     send(Msg, Headers, Proxy).
@@ -51,6 +78,13 @@ gen_headers(AppSecret) ->
     [{<<"Content-Type">>, <<"application/json; charset=utf-8">>},
      {<<"Authorization">>, Auth}].
 
+get_conf_app_secret() ->
+    {ok, AppSecret} = application:get_env(fcm_push, app_secret),
+    AppSecret.
+
+get_conf_proxy() ->
+    {ok, Proxy} = application:get_env(fcm_push, proxy),
+    Proxy.
 
 send(PayloadMaps, Headers) ->
     send(PayloadMaps, Headers, undefined).
@@ -61,7 +95,7 @@ send(PayloadMaps, Headers, Proxy) ->
     Payload = jiffy:encode(PayloadMaps),
     Options = case Proxy of
                   undefined ->[{pool, fcm}];
-                  _ -> [{pool, default}, {proxy, Proxy}]
+                  _ -> [{pool, fcm}, {proxy, Proxy}]
               end,
     {ok, StatusCode, _RespHeaders, ClientRef} = hackney:request(Method, ?URL, Headers,
                                                                 Payload, Options),
