@@ -1,13 +1,13 @@
 # fcm_push
 > Google FCM push server sdk for Erlang  
 > 集成版本：https://github.com/dcy/epush    
-> 使用例子：[/src/fcm_push_example.erl](/src/huawei_push_example.erl)
+> 使用例子：[/src/fcm_push_example.erl](/src/fcm_push_example.erl)
 
 ## Authorization 
 * gen_authorization(AppSecret)
 * gen_headers(AppSecret)
 
-## push 通用推送接口
+## push 通用
 * push(Maps)
 * push(AppSecret, Maps)
 * push(AppSecret, Proxy, Maps)
