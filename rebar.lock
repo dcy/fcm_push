@@ -2,7 +2,7 @@
 [{<<"certifi">>,{pkg,<<"certifi">>,<<"0.4.0">>},1},
  {<<"eutil">>,
   {git,"https://github.com/dcy/eutil",
-       {ref,"6e1cdb533af23fe3809d4707a83b5e37b4aa1b56"}},
+       {ref,"13f6ad5bfc52d089ad619050ea10444acde37cb4"}},
   0},
  {<<"goldrush">>,
   {git,"git://github.com/DeadZen/goldrush.git",

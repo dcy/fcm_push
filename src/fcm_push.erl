@@ -18,80 +18,79 @@
 
 %% 通用API
 push(Maps) ->
-    AppSecret = get_conf_app_secret(),
+    ApiKey = get_conf_api_key(),
     Proxy = get_conf_proxy(),
-    push(AppSecret, Proxy, Maps).
+    push(ApiKey, Proxy, Maps).
 
-push(AppSecret, Maps) ->
-    push(AppSecret, undefined, Maps).
+push(ApiKey, Maps) ->
+    push(ApiKey, undefined, Maps).
 
-push(AppSecret, Proxy, Maps) ->
-    Headers = gen_headers(AppSecret),
-    send(Maps, Headers, Proxy).
+push(ApiKey, Proxy, Maps) ->
+    send(ApiKey, Proxy, Maps).
 
 %% 通知栏
 notification(To, Title, Content) ->
-    AppSecret = get_conf_app_secret(),
+    ApiKey = get_conf_api_key(),
     Proxy = get_conf_proxy(),
-    notification(AppSecret, Proxy, To, Title, Content).
+    notification(ApiKey, Proxy, To, Title, Content).
 
-notification(AppSecret, To, Title, Content) ->
-    notification(AppSecret, undefined, To, Title, Content).
+notification(ApiKey, To, Title, Content) ->
+    notification(ApiKey, undefined, To, Title, Content).
 
-notification(AppSecret, Proxy, To, Title, Content) ->
-    Headers = gen_headers(AppSecret),
+notification(ApiKey, Proxy, To, Title, Content) ->
     Notification = #{<<"title">> => unicode:characters_to_binary(Title),
-                     <<"body">> => unicode:characters_to_binary(Content)},
+                     <<"body">> => unicode:characters_to_binary(Content),
+                     <<"sound">> => <<"default">>},
     Msg = #{<<"to">> => list_to_binary(To), <<"notification">> => Notification},
-    send(Msg, Headers, Proxy).
+    send(ApiKey, Proxy, Msg).
 
 %% 透传
 
 data(To, Data) ->
-    AppSecret = get_conf_app_secret(),
+    ApiKey = get_conf_api_key(),
     Proxy = get_conf_proxy(),
-    data(AppSecret, Proxy, To, Data).
+    data(ApiKey, Proxy, To, Data).
 
-data(AppSecret, To, Data) ->
-    data(AppSecret, undefined, To, Data).
+data(ApiKey, To, Data) ->
+    data(ApiKey, undefined, To, Data).
 
-data(AppSecret, Proxy, To, Data) ->
+data(ApiKey, Proxy, To, Data) ->
     Msg = #{<<"to">> => list_to_binary(To), <<"data">> => Data},
-    Headers = gen_headers(AppSecret),
-    send(Msg, Headers, Proxy).
+    send(ApiKey, Proxy, Msg).
 
 
 %% 主题
-topics(AppSecret, Topics, Data) ->
-    topics(AppSecret, undefined, Topics, Data).
+topics(ApiKey, Topics, Data) ->
+    topics(ApiKey, undefined, Topics, Data).
 
-topics(AppSecret, Proxy, Topics, Data) ->
+topics(ApiKey, Proxy, Topics, Data) ->
     ok.
 
 
 
-gen_authorization(AppSecret) ->
-    <<"key=", (list_to_binary(AppSecret))/binary>>.
+gen_authorization(ApiKey) ->
+    <<"key=", (eutil:to_binary(ApiKey))/binary>>.
 
-gen_headers(AppSecret) ->
-    Auth = gen_authorization(AppSecret),
+gen_headers(ApiKey) ->
+    Auth = gen_authorization(ApiKey),
     [{<<"Content-Type">>, <<"application/json; charset=utf-8">>},
      {<<"Authorization">>, Auth}].
 
-get_conf_app_secret() ->
-    {ok, AppSecret} = application:get_env(fcm_push, app_secret),
-    AppSecret.
+get_conf_api_key() ->
+    {ok, ApiKey} = application:get_env(fcm_push, api_key),
+    ApiKey.
 
 get_conf_proxy() ->
     {ok, Proxy} = application:get_env(fcm_push, proxy),
     Proxy.
 
-send(PayloadMaps, Headers) ->
-    send(PayloadMaps, Headers, undefined).
+send(ApiKey, PayloadMaps) ->
+    send(ApiKey, undefined, PayloadMaps).
 
 %% Proxy: "127.0.0.1:1081"
-send(PayloadMaps, Headers, Proxy) ->
+send(ApiKey, Proxy, PayloadMaps) ->
     Method = post,
+    Headers = gen_headers(ApiKey),
     Payload = jiffy:encode(PayloadMaps),
     Options = case Proxy of
                   undefined ->[{pool, fcm}];
