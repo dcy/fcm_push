@@ -3,6 +3,10 @@
 %%API
 -export([push/1, push/2, push/3,
          notification/3, notification/4, notification/5,
+
+         general_notification/5, general_app_msg/4,
+
+         app_msg/2, app_msg/3, app_msg/4,
          data/2, data/3, data/4,
          topics/3, topics/4
         ]).
@@ -45,6 +49,14 @@ notification(ApiKey, Proxy, To, Title, Content) ->
     send(ApiKey, Proxy, Msg).
 
 %% 透传
+app_msg(To, Msg) ->
+    data(To, Msg).
+
+app_msg(ApiKey, To, Msg) ->
+    data(ApiKey, To, Msg).
+
+app_msg(ApiKey, Proxy, To, Msg) ->
+    data(ApiKey, Proxy, To, Msg).
 
 data(To, Data) ->
     ApiKey = get_conf_api_key(),
@@ -115,3 +127,9 @@ send(ApiKey, Proxy, PayloadMaps) ->
             ok
     end.
 
+
+general_notification(ApiKey, Proxy, To, Title, Content) ->
+    notification(ApiKey, Proxy, To, Title, Content).
+
+general_app_msg(ApiKey, Proxy, To, Data) ->
+    data(ApiKey, Proxy, To, Data).
