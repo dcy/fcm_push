@@ -45,7 +45,7 @@ notification(ApiKey, Proxy, To, Title, Content) ->
     Notification = #{<<"title">> => unicode:characters_to_binary(Title),
                      <<"body">> => unicode:characters_to_binary(Content),
                      <<"sound">> => <<"default">>},
-    Msg = #{<<"to">> => list_to_binary(To), <<"notification">> => Notification},
+    Msg = #{<<"to">> => eutil:to_binary(To), <<"notification">> => Notification},
     send(ApiKey, Proxy, Msg).
 
 %% 透传
@@ -67,7 +67,7 @@ data(ApiKey, To, Data) ->
     data(ApiKey, undefined, To, Data).
 
 data(ApiKey, Proxy, To, Data) ->
-    Msg = #{<<"to">> => list_to_binary(To), <<"data">> => Data},
+    Msg = #{<<"to">> => eutil:to_binary(To), <<"data">> => Data},
     send(ApiKey, Proxy, Msg).
 
 
