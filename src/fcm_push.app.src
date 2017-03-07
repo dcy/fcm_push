@@ -7,7 +7,7 @@
    [kernel,
     stdlib,
     lager,
-    jiffy,
+    jsx,
     hackney,
     eutil
    ]},
