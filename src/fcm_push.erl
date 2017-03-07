@@ -120,11 +120,11 @@ send(ApiKey, Proxy, PayloadMaps) ->
                     ok;
                 0 ->
                     lager:error("fcm_push error, PayloadMaps:~p, Result: ~p", [PayloadMaps, Result]),
-                    ok 
+                    {error, Result}
             end;
         _ ->
             lager:error("fcm_push error, StatusCode: ~p, PayloadMaps: ~p", [StatusCode, PayloadMaps]),
-            ok
+            {error, #{code => StatusCode}}
     end.
 
 
