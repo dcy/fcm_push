@@ -103,7 +103,7 @@ send(ApiKey, PayloadMaps) ->
 send(ApiKey, Proxy, PayloadMaps) ->
     Method = post,
     Headers = gen_headers(ApiKey),
-    Payload = jsx:encode(PayloadMaps),
+    Payload = jsone:encode(PayloadMaps),
     Options = case Proxy of
                   undefined ->[{pool, fcm}];
                   _ -> [{pool, fcm}, {proxy, Proxy}]
@@ -114,7 +114,7 @@ send(ApiKey, Proxy, PayloadMaps) ->
     case StatusCode of
         200 ->
             {ok, ResultBin} = hackney:body(ClientRef),
-            Result = jsx:decode(ResultBin, [return_maps]),
+            Result = jsone:decode(ResultBin),
             case maps:get(<<"success">>, Result) of
                 1 ->
                     ok;

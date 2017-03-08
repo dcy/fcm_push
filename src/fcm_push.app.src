@@ -7,7 +7,7 @@
    [kernel,
     stdlib,
     lager,
-    jsx,
+    jsone,
     hackney,
     eutil
    ]},
