@@ -103,7 +103,7 @@ send(ApiKey, PayloadMaps) ->
 send(ApiKey, Proxy, PayloadMaps) ->
     Method = post,
     Headers = gen_headers(ApiKey),
-    Payload = jsone:encode(PayloadMaps),
+    Payload = eutil:json_encode(PayloadMaps),
     Options = case Proxy of
                   undefined ->[{pool, fcm}];
                   _ -> [{pool, fcm}, {proxy, Proxy}]
@@ -114,7 +114,7 @@ send(ApiKey, Proxy, PayloadMaps) ->
     case StatusCode of
         200 ->
             {ok, ResultBin} = hackney:body(ClientRef),
-            Result = jsone:decode(ResultBin),
+            Result = eutil:json_decode(ResultBin),
             case maps:get(<<"success">>, Result) of
                 1 ->
                     ok;
