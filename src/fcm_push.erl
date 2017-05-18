@@ -117,7 +117,7 @@ send(ApiKey, Proxy, PayloadMaps) ->
             Result = eutil:json_decode(ResultBin),
             case maps:get(<<"success">>, Result) of
                 1 ->
-                    ok;
+                    {ok, Result};
                 0 ->
                     lager:error("fcm_push error, PayloadMaps:~p, Result: ~p", [PayloadMaps, Result]),
                     {error, Result}
